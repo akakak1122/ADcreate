@@ -5,9 +5,7 @@ import {
   Get,
   HttpCode,
   Param,
-  Patch,
   Post,
-  Req,
   ValidationPipe,
 } from '@nestjs/common';
 
@@ -16,9 +14,14 @@ import { CreateBlackDto } from './dto/create-black.dto';
 import { Black } from './schemas/black.schema';
 import { BlackService } from './black.service';
 
+import { CachingService } from '../caching';
+
 @Controller('/black')
 export class BlackController {
-  constructor(private readonly blackervice: BlackService) {}
+  constructor(
+    private readonly blackervice: BlackService,
+    private cacheManager: CachingService,
+    ) {}
 
   @Post()
   @HttpCode(201)
@@ -26,14 +29,17 @@ export class BlackController {
     @Body(ValidationPipe) createBlackDto: CreateBlackDto,
   ): Promise<Black> {
     const black = await this.blackervice.create(createBlackDto);
-
+    await this.cacheManager.set(`Black:${black.ip}`, true);
     return black;
   }
 
   @Get('/')
   @HttpCode(200)
   async find(): Promise<Black[]> {
-    return this.blackervice.findAll();
+    const blacks = await this.blackervice.findAll();
+    const promises = blacks.map(black => this.cacheManager.set(`Black:${black.ip}`, true));
+    await Promise.all(promises);
+    return blacks;
   }
 
   @Get('/:id')
@@ -45,6 +51,8 @@ export class BlackController {
   @Delete('/:id')
   @HttpCode(200)
   async delete(@Param('id') id: string): Promise<any> {
-    return this.blackervice.delete(id);
+    const black = await this.blackervice.delete(id);
+    await this.cacheManager.del(`Black:${black.ip}`);
+    return black;
   }
 }

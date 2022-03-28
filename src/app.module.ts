@@ -4,10 +4,12 @@ import { BlackModule } from './transaction/black';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { IPMiddleware } from './middlewares/ip.middleware';
+import { CachingModule } from './transaction/caching';
 import * as joi from 'joi';
 
 @Module({
   imports: [
+    CachingModule,
     AddressModule,
     BlackModule,
     ConfigModule.forRoot({
