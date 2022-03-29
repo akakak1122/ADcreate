@@ -28,8 +28,8 @@ export class AddressService {
     return addresss;
   }
 
-  async find(id: string): Promise<Address> {
-    const address = await this.addressModel.findOne({ _id: id });
+  async find(url: string): Promise<Address> {
+    const address = await this.addressModel.findOne({ newURL: url });
     if (!address) {
       throw new Error('없는 주소입니다.');
     }

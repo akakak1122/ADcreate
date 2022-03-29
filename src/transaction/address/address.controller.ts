@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Req,
+  Redirect,
   ValidationPipe,
 } from '@nestjs/common';
 
@@ -37,10 +38,20 @@ export class AddressController {
     return this.addresservice.findAll();
   }
 
-  @Get('/:id')
-  @HttpCode(200)
-  async findOne(@Param('id') id: string): Promise<any> {
-    return this.addresservice.find(id);
+  @Get('/:url')
+  @Redirect()
+  async findOne(@Param('url') url: string, @Req() req): Promise<any> {
+    const agent = req.useragent;
+    const address = await this.addresservice.find(url);
+    let redirect = address.mainURL;
+    if (agent.isDesktop) {
+      redirect = address.PCURL;
+    } else if(agent.isMobile) {
+      redirect = address.mobileURL;
+    } else {
+      redirect = address.LPURL;
+    }
+    return { url: redirect };
   }
 
   @Patch('/:id')

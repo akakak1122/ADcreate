@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import * as useragent from 'express-useragent';
 import { AppModule } from './app.module';
 import {
   BadRequestExceptionFilter,
@@ -17,6 +18,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*'
   });
+  app.use(useragent.express());
   await app.listen(3000);
 }
 bootstrap();
