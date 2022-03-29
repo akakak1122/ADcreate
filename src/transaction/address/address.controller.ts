@@ -44,12 +44,12 @@ export class AddressController {
     const agent = req.useragent;
     const address = await this.addresservice.find(url);
     let redirect = address.mainURL;
-    if (agent.isDesktop) {
+    if (/; wv/.test(agent.source)) {
+      redirect = address.LPURL;
+    } else if (agent.isDesktop) {
       redirect = address.PCURL;
     } else if(agent.isMobile) {
       redirect = address.mobileURL;
-    } else {
-      redirect = address.LPURL;
     }
     return { url: redirect };
   }
