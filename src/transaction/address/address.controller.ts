@@ -17,7 +17,7 @@ import { UpdateAddressDto } from './dto/update-address.dto';
 import { Address } from './schemas/address.schema';
 import { AddressService } from './address.service';
 
-@Controller('/address')
+@Controller('/api/address')
 export class AddressController {
   constructor(private readonly addresservice: AddressService) {}
 

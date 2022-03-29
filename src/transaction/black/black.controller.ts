@@ -16,7 +16,7 @@ import { BlackService } from './black.service';
 
 import { CachingService } from '../caching';
 
-@Controller('/black')
+@Controller('/api/black')
 export class BlackController {
   constructor(
     private readonly blackervice: BlackService,
