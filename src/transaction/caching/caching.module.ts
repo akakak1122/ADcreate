@@ -8,6 +8,7 @@ import * as redisStore from 'cache-manager-ioredis';
     store: redisStore,
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
+    ttl: 0,
   })],
   providers: [CachingService,],
   exports: [CachingService],

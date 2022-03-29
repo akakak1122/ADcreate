@@ -14,7 +14,9 @@ async function bootstrap() {
     new MongoExceptionFilter(),
   );
 
-  app.enableCors();
+  app.enableCors({
+    origin: '*'
+  });
   await app.listen(3000);
 }
 bootstrap();
