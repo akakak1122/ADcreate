@@ -25,6 +25,8 @@ import * as joi from 'joi';
         DB_URI: joi.string().required(),
         // DB_USER: joi.string().required(),
         // DB_PASSWORD: joi.string().required(),
+        REDIS_HOST: joi.string().required(),
+        REDIS_PORT: joi.string().required(),
       }),
     }),
     MongooseModule.forRoot(process.env.DB_URI, {
