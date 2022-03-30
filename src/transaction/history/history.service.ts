@@ -23,7 +23,7 @@ export class HistoryService {
   }
 
   async deleteAll(): Promise<Boolean> {
-    const history = await this.historyModel.remove();
+    const history = await this.historyModel.deleteMany();
     return true;
   }
 }
