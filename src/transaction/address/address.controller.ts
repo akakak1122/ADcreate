@@ -8,7 +8,6 @@ import {
   Patch,
   Post,
   Req,
-  Redirect,
   ValidationPipe,
 } from '@nestjs/common';
 
@@ -39,7 +38,7 @@ export class AddressController {
   }
 
   @Get('/:url')
-  @Redirect()
+  @HttpCode(200)
   async findOne(@Param('url') url: string, @Req() req): Promise<any> {
     const agent = req.useragent;
     const address = await this.addresservice.find(url);
@@ -51,7 +50,7 @@ export class AddressController {
     } else if(agent.isMobile) {
       redirect = address.mobileURL;
     }
-    return { url: redirect };
+    return redirect;
   }
 
   @Patch('/:id')
