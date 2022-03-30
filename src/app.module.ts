@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { IPMiddleware } from './middlewares/ip.middleware';
 import { CachingModule } from './transaction/caching';
+import { AuthModule } from './transaction/auth';
 import * as joi from 'joi';
 
 @Module({
@@ -12,6 +13,7 @@ import * as joi from 'joi';
     CachingModule,
     AddressModule,
     BlackModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
@@ -27,6 +29,7 @@ import * as joi from 'joi';
         // DB_PASSWORD: joi.string().required(),
         REDIS_HOST: joi.string().required(),
         REDIS_PORT: joi.string().required(),
+        SECRET_KEY: joi.string().required(),
       }),
     }),
     MongooseModule.forRoot(process.env.DB_URI, {

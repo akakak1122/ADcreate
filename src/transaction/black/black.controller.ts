@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 
 import { CreateBlackDto } from './dto/create-black.dto';
@@ -15,8 +16,10 @@ import { Black } from './schemas/black.schema';
 import { BlackService } from './black.service';
 
 import { CachingService } from '../caching';
+import { AuthGuard } from '../auth'
 
 @Controller('/api/black')
+@UseGuards(AuthGuard)
 export class BlackController {
   constructor(
     private readonly blackervice: BlackService,

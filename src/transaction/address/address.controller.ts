@@ -9,6 +9,7 @@ import {
   Post,
   Req,
   ValidationPipe,
+  UseGuards,
 } from '@nestjs/common';
 
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -17,11 +18,14 @@ import { UpdateAddressDto } from './dto/update-address.dto';
 import { Address } from './schemas/address.schema';
 import { AddressService } from './address.service';
 
+import { AuthGuard } from '../auth';
+
 @Controller('/api/address')
 export class AddressController {
   constructor(private readonly addresservice: AddressService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   @HttpCode(201)
   async create(
     @Body(ValidationPipe) createAddressDto: CreateAddressDto,
@@ -32,6 +36,7 @@ export class AddressController {
   }
 
   @Get('/')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async find(): Promise<Address[]> {
     return this.addresservice.findAll();
@@ -54,6 +59,7 @@ export class AddressController {
   }
 
   @Patch('/:id')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async update(
     @Param('id') id: string,
@@ -63,6 +69,7 @@ export class AddressController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthGuard)
   @HttpCode(200)
   async delete(@Param('id') id: string): Promise<any> {
     return this.addresservice.delete(id);
