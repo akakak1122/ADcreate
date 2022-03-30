@@ -10,13 +10,13 @@ import { LoginDTO } from './dto/login.dto';
 
 import { AuthService } from './auth.service';
 
-@Controller('/api/')
+@Controller('/api/login')
 export class AuthController {
   constructor(
     private readonly authservice: AuthService,
     ) {}
 
-  @Post('/login')
+  @Post()
   @HttpCode(201)
   async login(
     @Body(ValidationPipe) loginDto: LoginDTO,
