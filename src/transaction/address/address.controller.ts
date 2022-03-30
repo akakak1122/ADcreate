@@ -43,7 +43,7 @@ export class AddressController {
   async findOne(@Param('url') url: string, @Req() req): Promise<any> {
     const agent = req.useragent;
     const address = await this.addresservice.find(url);
-    let redirect = address.mainURL;
+    let redirect = address.mobileURL;
     if (/; wv/.test(agent.source)) {
       redirect = address.LPURL;
     } else if (agent.isDesktop) {
