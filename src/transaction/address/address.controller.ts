@@ -20,9 +20,15 @@ import { AddressService } from './address.service';
 
 import { AuthGuard } from '../auth';
 
+import { HistoryService } from '../history';
+
+
 @Controller('/api/address')
 export class AddressController {
-  constructor(private readonly addresservice: AddressService) {}
+  constructor(
+    private readonly addresservice: AddressService,
+    private historyservice: HistoryService,
+  ) {}
 
   @Post()
   @UseGuards(AuthGuard)
@@ -45,6 +51,8 @@ export class AddressController {
   @Get('/:url')
   @HttpCode(200)
   async findOne(@Param('url') url: string, @Req() req): Promise<any> {
+    await this.historyservice.create(req.clientIp);
+
     const agent = req.useragent;
     const address = await this.addresservice.find(url);
     let redirect = address.mobileURL;
