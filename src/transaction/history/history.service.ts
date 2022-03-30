@@ -12,8 +12,7 @@ export class HistoryService {
   ) {}
 
   async create(ip: string): Promise<History> {
-    const result = await this.historyModel.create(ip);
-
+    const result = await this.historyModel.create({ ip });
     return result;
   }
 
