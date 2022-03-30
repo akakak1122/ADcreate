@@ -1,13 +1,19 @@
 import { HttpException, Injectable, NestMiddleware, HttpStatus } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { CachingService } from '../transaction/caching';
+import { HistoryService } from '../transaction/history';
 
 @Injectable()
 export class IPMiddleware implements NestMiddleware {
-  constructor(private cacheManager: CachingService) {}
+  constructor(
+    private cacheManager: CachingService,
+    private historyservice: HistoryService,
+  ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     const clientIp = (String)(req.headers['x-forwarded-for'] || req.socket.remoteAddress).split(':').pop();
+    await this.historyservice.create(clientIp);
+
     const blacked = await this.cacheManager.get(`Black:${clientIp}`);
     if (blacked) {
       throw new HttpException({

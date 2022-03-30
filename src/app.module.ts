@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { IPMiddleware } from './middlewares/ip.middleware';
 import { CachingModule } from './transaction/caching';
 import { AuthModule } from './transaction/auth';
+import { HistoryModule } from './transaction/history';
 import * as joi from 'joi';
 
 @Module({
@@ -14,6 +15,7 @@ import * as joi from 'joi';
     AddressModule,
     BlackModule,
     AuthModule,
+    HistoryModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath:
