@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
+import { Model } from 'mongoose';
 
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -23,7 +23,7 @@ export class AddressService {
   }
 
   async findAll(): Promise<Address[]> {
-    const addresss = await this.addressModel.find();
+    const addresss = await this.addressModel.find().sort({ createdAt: -1 });
 
     return addresss;
   }

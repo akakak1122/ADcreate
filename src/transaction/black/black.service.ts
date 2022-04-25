@@ -22,7 +22,7 @@ export class BlackService {
   }
 
   async findAll(): Promise<Black[]> {
-    const blacks = await this.blackModel.find();
+    const blacks = await this.blackModel.find().sort({ createdAt: -1 });
 
     return blacks;
   }

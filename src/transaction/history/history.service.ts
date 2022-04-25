@@ -18,7 +18,7 @@ export class HistoryService {
   }
 
   async findAll(): Promise<History[]> {
-    const historys = await this.historyModel.find();
+    const historys = await this.historyModel.find().sort({ createdAt: -1 });;
 
     return historys;
   }
