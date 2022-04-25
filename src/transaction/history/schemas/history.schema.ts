@@ -7,6 +7,31 @@ export class History {
     required: true,
   })
   ip: string;
+
+  @Prop({
+    type: String,
+  })
+  country?: string;
+
+  @Prop({
+    type: String,
+  })
+  city?: string;
+
+  @Prop({
+    type: String,
+  })
+  os?: string;
+
+  @Prop({
+    type: String,
+  })
+  browser?: string;
+
+  @Prop({
+    type: String,
+  })
+  source?: string;
 }
 
 export type HistoryDocument = History & Document;

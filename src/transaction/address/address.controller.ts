@@ -27,6 +27,7 @@ import { CachingService } from '../caching';
 import { BlackController } from '../black';
 
 import * as moment from 'moment';
+import { lookup } from 'geoip-lite';
 
 @Controller('/api/address')
 export class AddressController {
@@ -81,9 +82,17 @@ export class AddressController {
       await this.cacheManager.set(`IP:${req.clientIp}`, isReset);
     }
 
-    await this.historyservice.create(req.clientIp);
-
     const agent = req.useragent;
+    const geo = lookup(req.clientIp);
+    await this.historyservice.create({
+      ip: req.clientIp,
+      country: geo?.country,
+      city: geo?.city,
+      os: agent.os,
+      browser: agent.browser,
+      source: agent.source,
+    });
+
     const address = await this.addresservice.find(url);
     let redirect = address.mobileURL;
     const isWeb = ['isDesktop', 'isChrome', 'isSafari', 'isIE', 'isOpera', 'isEdge', 'isFirefox'];
