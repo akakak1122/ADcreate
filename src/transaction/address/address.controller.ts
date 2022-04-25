@@ -10,6 +10,8 @@ import {
   Req,
   ValidationPipe,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -21,13 +23,18 @@ import { AddressService } from './address.service';
 import { AuthGuard } from '../auth';
 
 import { HistoryService } from '../history';
+import { CachingService } from '../caching';
+import { BlackController } from '../black';
 
+import * as moment from 'moment';
 
 @Controller('/api/address')
 export class AddressController {
   constructor(
     private readonly addresservice: AddressService,
     private historyservice: HistoryService,
+    private cacheManager: CachingService,
+    private blackcontroller: BlackController,
   ) {}
 
   @Post()
@@ -51,14 +58,38 @@ export class AddressController {
   @Get('/:url')
   @HttpCode(200)
   async findOne(@Param('url') url: string, @Req() req): Promise<any> {
+    const blacked = await this.cacheManager.get(`Black:${req.clientIp}`);
+    if (blacked) {
+      throw new HttpException({
+        status: HttpStatus.FORBIDDEN,
+        message: 'Access Denied Error',
+      }, HttpStatus.FORBIDDEN);
+    }
+    const retryip = await this.cacheManager.get(`IP:${req.clientIp}`);
+    let isReset = null;
+    if (retryip) {
+      const diff = moment().diff(retryip.time);
+      if (diff > Number(process.env.IP_RETRY_BLACK_TIME)) isReset = { time: new Date(), cnt: 1 };
+      else if(retryip.cnt < Number(process.env.IP_RETRY_BLACK_CNT)) {
+        isReset = { time: retryip.time, cnt: retryip.cnt + 1 };
+      }
+      else {
+        await this.blackcontroller.create({ ip: req.clientIp });
+      }
+    } else isReset = { time: new Date(), cnt: 1 };
+    if (isReset) {
+      await this.cacheManager.set(`IP:${req.clientIp}`, isReset);
+    }
+
     await this.historyservice.create(req.clientIp);
 
     const agent = req.useragent;
     const address = await this.addresservice.find(url);
     let redirect = address.mobileURL;
+    const isWeb = ['isDesktop', 'isChrome', 'isSafari', 'isIE', 'isOpera', 'isEdge', 'isFirefox'];
     if (/; wv/.test(agent.source)) {
       redirect = address.LPURL;
-    } else if (agent.isDesktop) {
+    } else if (isWeb.find(key => agent[key])) {
       redirect = address.PCURL;
     } else if(agent.isMobile) {
       redirect = address.mobileURL;

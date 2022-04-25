@@ -32,6 +32,8 @@ import * as joi from 'joi';
         REDIS_HOST: joi.string().required(),
         REDIS_PORT: joi.string().required(),
         SECRET_KEY: joi.string().required(),
+        IP_RETRY_BLACK_TIME: joi.number().required(),
+        IP_RETRY_BLACK_CNT: joi.number().required(),
       }),
     }),
     MongooseModule.forRoot(process.env.DB_URI, {
