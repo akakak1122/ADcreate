@@ -1,8 +1,9 @@
-import { Injectable, } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { CreateBlackDto } from './dto/create-black.dto';
+import { UpdateBlackDto } from './dto/update-black.dto';
 import { Black, BlackDocument } from './schemas/black.schema';
 
 @Injectable()
@@ -34,6 +35,11 @@ export class BlackService {
     }
 
     return black;
+  }
+
+  async update(id: string, blackdto: UpdateBlackDto): Promise<Black> {
+    const result = await this.blackModel.findByIdAndUpdate(id, { $set: blackdto }, { new: true });
+    return result;
   }
 
   async delete(id: string): Promise<Black> {

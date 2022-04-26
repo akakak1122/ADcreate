@@ -61,20 +61,19 @@ export class AddressController {
   async findOne(@Param('url') url: string, @Req() req): Promise<any> {
     const blacked = await this.cacheManager.get(`Black:${req.clientIp}`);
     if (blacked) {
-      throw new HttpException({
-        status: HttpStatus.FORBIDDEN,
-        message: 'Access Denied Error',
-      }, HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        { status: HttpStatus.FORBIDDEN, message: 'Access Denied Error' },
+        HttpStatus.FORBIDDEN,
+      );
     }
     const retryip = await this.cacheManager.get(`IP:${req.clientIp}`);
     let isReset = null;
-    if (retryip) {
+    if (blacked !== false && retryip) {
       const diff = moment().diff(retryip.time);
       if (diff > Number(process.env.IP_RETRY_BLACK_TIME)) isReset = { time: new Date(), cnt: 1 };
-      else if(retryip.cnt < Number(process.env.IP_RETRY_BLACK_CNT)) {
+      else if (retryip.cnt < Number(process.env.IP_RETRY_BLACK_CNT)) {
         isReset = { time: retryip.time, cnt: retryip.cnt + 1 };
-      }
-      else {
+      } else {
         await this.blackcontroller.create({ ip: req.clientIp });
       }
     } else isReset = { time: new Date(), cnt: 1 };
@@ -95,12 +94,20 @@ export class AddressController {
 
     const address = await this.addresservice.find(url);
     let redirect = address.mobileURL;
-    const isWeb = ['isDesktop', 'isChrome', 'isSafari', 'isIE', 'isOpera', 'isEdge', 'isFirefox'];
+    const isWeb = [
+      'isDesktop',
+      'isChrome',
+      'isSafari',
+      'isIE',
+      'isOpera',
+      'isEdge',
+      'isFirefox',
+    ];
     if (/; wv/.test(agent.source)) {
       redirect = address.LPURL;
-    } else if (isWeb.find(key => agent[key])) {
+    } else if (isWeb.find((key: string) => agent[key])) {
       redirect = address.PCURL;
-    } else if(agent.isMobile) {
+    } else if (agent.isMobile) {
       redirect = address.mobileURL;
     }
     return redirect;

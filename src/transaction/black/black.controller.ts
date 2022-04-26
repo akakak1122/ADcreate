@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Put,
   HttpCode,
   Param,
   Post,
@@ -11,12 +12,13 @@ import {
 } from '@nestjs/common';
 
 import { CreateBlackDto } from './dto/create-black.dto';
+import { UpdateBlackDto } from './dto/update-black.dto';
 
 import { Black } from './schemas/black.schema';
 import { BlackService } from './black.service';
 
 import { CachingService } from '../caching';
-import { AuthGuard } from '../auth'
+import { AuthGuard } from '../auth';
 
 @Controller('/api/black')
 @UseGuards(AuthGuard)
@@ -49,6 +51,17 @@ export class BlackController {
   @HttpCode(200)
   async findOne(@Param('id') id: string): Promise<any> {
     return this.blackervice.find(id);
+  }
+
+  @Put('/:id')
+  @HttpCode(200)
+  async update(
+    @Param('id') id: string,
+    @Body(ValidationPipe) updateBlackDto: UpdateBlackDto,
+  ): Promise<Black> {
+    const black = await this.blackervice.update(id, updateBlackDto);
+    await this.cacheManager.set(`Black:${black.ip}`, !black.ignored);
+    return black;
   }
 
   @Delete('/:id')

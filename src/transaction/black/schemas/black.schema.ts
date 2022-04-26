@@ -7,6 +7,13 @@ export class Black {
     required: true,
   })
   ip: string;
+
+  @Prop({
+    type: Boolean,
+    required: true,
+    default: false,
+  })
+  ignored: boolean;
 }
 
 export type BlackDocument = Black & Document;
