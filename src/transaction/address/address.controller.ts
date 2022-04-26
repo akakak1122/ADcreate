@@ -10,8 +10,6 @@ import {
   Req,
   ValidationPipe,
   UseGuards,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -59,14 +57,14 @@ export class AddressController {
   @Get('/:url')
   @HttpCode(200)
   async findOne(@Param('url') url: string, @Req() req): Promise<any> {
+    const agent = req.useragent;
+    const address = await this.addresservice.find(url);
+
     const blacked = await this.cacheManager.get(`Black:${req.clientIp}`);
-    if (blacked) {
-      throw new HttpException(
-        { status: HttpStatus.FORBIDDEN, message: 'Access Denied Error' },
-        HttpStatus.FORBIDDEN,
-      );
-    }
+    if (blacked) return address.PCURL;
+
     const retryip = await this.cacheManager.get(`IP:${req.clientIp}`);
+
     let isReset = null;
     if (blacked !== false && retryip) {
       const diff = moment().diff(retryip.time);
@@ -81,7 +79,6 @@ export class AddressController {
       await this.cacheManager.set(`IP:${req.clientIp}`, isReset);
     }
 
-    const agent = req.useragent;
     const geo = lookup(req.clientIp);
     await this.historyservice.create({
       ip: req.clientIp,
@@ -92,7 +89,6 @@ export class AddressController {
       source: agent.source,
     });
 
-    const address = await this.addresservice.find(url);
     let redirect = address.mobileURL;
     const isWeb = [
       'isDesktop',
