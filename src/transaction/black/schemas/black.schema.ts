@@ -4,9 +4,15 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 export class Black {
   @Prop({
     type: String,
-    required: true,
+    required: false,
   })
   ip: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  uuid: string;
 
   @Prop({
     type: Boolean,

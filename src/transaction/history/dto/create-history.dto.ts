@@ -5,6 +5,9 @@ export class CreateHistoryDto {
   readonly ip: string;
 
   @IsString()
+  readonly uuid: string;
+
+  @IsString()
   readonly country?: string;
 
   @IsString()

@@ -34,7 +34,7 @@ export class BlackController {
     @Body(ValidationPipe) createBlackDto: CreateBlackDto,
   ): Promise<Black> {
     const black = await this.blackervice.create(createBlackDto);
-    await this.cacheManager.set(`Black:${black.ip}`, true);
+    await this.cacheManager.set(`Black:${black.ip || black.uuid}`, true);
     return black;
   }
 
@@ -42,7 +42,7 @@ export class BlackController {
   @HttpCode(200)
   async find(): Promise<Black[]> {
     const blacks = await this.blackervice.findAll();
-    const promises = blacks.map(black => this.cacheManager.set(`Black:${black.ip}`, true));
+    const promises = blacks.map(black => this.cacheManager.set(`Black:${black.ip || black.uuid}`, true));
     await Promise.all(promises);
     return blacks;
   }
@@ -60,7 +60,7 @@ export class BlackController {
     @Body(ValidationPipe) updateBlackDto: UpdateBlackDto,
   ): Promise<Black> {
     const black = await this.blackervice.update(id, updateBlackDto);
-    await this.cacheManager.set(`Black:${black.ip}`, !black.ignored);
+    await this.cacheManager.set(`Black:${black.ip || black.uuid}`, !black.ignored);
     return black;
   }
 
@@ -68,7 +68,7 @@ export class BlackController {
   @HttpCode(200)
   async delete(@Param('id') id: string): Promise<any> {
     const black = await this.blackervice.delete(id);
-    await this.cacheManager.del(`Black:${black.ip}`);
+    await this.cacheManager.del(`Black:${black.ip || black.uuid}`);
     return black;
   }
 }

@@ -60,7 +60,7 @@ export class AddressController {
     const agent = req.useragent;
     const address = await this.addresservice.find(url);
 
-    const blacked = await this.cacheManager.get(`Black:${req.clientIp}`);
+    const blacked = (await this.cacheManager.get(`Black:${req.clientIp}`)) || (await this.cacheManager.get(`Black:${req.query.uuid}`));
     if (blacked) return address.PCURL;
 
     const defaultBlack = ['kakao-scrap', 'machintosh', 'kakaotalk-scrap'];
@@ -85,6 +85,7 @@ export class AddressController {
     const geo = lookup(req.clientIp);
     await this.historyservice.create({
       ip: req.clientIp,
+      uuid: req.query.uuid,
       country: geo?.country,
       city: geo?.city,
       os: agent.os,
