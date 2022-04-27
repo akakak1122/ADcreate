@@ -63,6 +63,9 @@ export class AddressController {
     const blacked = await this.cacheManager.get(`Black:${req.clientIp}`);
     if (blacked) return address.PCURL;
 
+    const defaultBlack = ['kakao-scrap', 'machintosh', 'kakaotalk-scrap'];
+    if (defaultBlack.find(str => new RegExp(str).test(agent.source))) return address.PCURL;
+
     const retryip = await this.cacheManager.get(`IP:${req.clientIp}`);
 
     let isReset = null;
