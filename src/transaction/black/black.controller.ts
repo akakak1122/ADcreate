@@ -45,7 +45,7 @@ export class BlackController {
   @HttpCode(200)
   async find(): Promise<Black[]> {
     const blacks = await this.blackervice.findAll();
-    const promises = blacks.map(black => this.cacheManager.set(`Black:${black.ip || black.uuid}`, true));
+    const promises = blacks.map(black => this.cacheManager.set(`Black:${black.ip || black.uuid}`, !black.ignored));
     await Promise.all(promises);
     return blacks;
   }

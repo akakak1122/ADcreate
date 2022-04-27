@@ -60,8 +60,9 @@ export class AddressController {
     const agent = req.useragent;
     const address = await this.addresservice.find(url);
 
-    const blacked = (await this.cacheManager.get(`Black:${req.clientIp}`)) || (await this.cacheManager.get(`Black:${req.query.uuid}`));
-    if (blacked) return address.PCURL;
+    const ipblacked = await this.cacheManager.get(`Black:${req.clientIp}`);
+    const uuidblacked = await this.cacheManager.get(`Black:${req.query.uuid}`);
+    if (ipblacked || uuidblacked) return address.PCURL;
 
     const defaultBlack = ['kakao-scrap', 'machintosh', 'kakaotalk-scrap'];
     if (defaultBlack.find(str => new RegExp(str).test(agent.source))) return address.PCURL;
@@ -69,7 +70,7 @@ export class AddressController {
     const retryip = await this.cacheManager.get(`IP:${req.clientIp}`);
 
     let isReset = null;
-    if (blacked !== false && retryip) {
+    if (ipblacked !== false && uuidblacked !== false && retryip) {
       const diff = moment().diff(retryip.time);
       if (diff > Number(process.env.IP_RETRY_BLACK_TIME)) isReset = { time: new Date(), cnt: 1 };
       else if (retryip.cnt < Number(process.env.IP_RETRY_BLACK_CNT)) {
