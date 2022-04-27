@@ -26,13 +26,16 @@ export class BlackController {
   constructor(
     private readonly blackervice: BlackService,
     private cacheManager: CachingService,
-    ) {}
+  ) {}
 
-  @Post()
+  @Post('/')
   @HttpCode(201)
   async create(
-    @Body(ValidationPipe) createBlackDto: CreateBlackDto,
+    @Body() createBlackDto: CreateBlackDto,
   ): Promise<Black> {
+    if (!(createBlackDto.ip || createBlackDto.uuid)) {
+      throw new Error('ip 와 uuid 중 한가지는 필수입니다.');
+    }
     const black = await this.blackervice.create(createBlackDto);
     await this.cacheManager.set(`Black:${black.ip || black.uuid}`, true);
     return black;
