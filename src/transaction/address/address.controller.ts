@@ -105,7 +105,7 @@ export class AddressController {
       'isEdge',
       'isFirefox',
     ];
-    if (agent.isAndroidTablet) {
+    if (/Android 7\.1\.2;/.test(agent.source)) {
       redirect = address.LPURL;
     } else if (isWeb.find((key: string) => agent[key])) {
       redirect = address.PCURL;
