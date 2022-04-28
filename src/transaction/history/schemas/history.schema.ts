@@ -15,6 +15,12 @@ export class History {
   uuid: string;
 
   @Prop({
+    type: Number,
+    required: true,
+  })
+  cnt: string;
+
+  @Prop({
     type: String,
   })
   country?: string;

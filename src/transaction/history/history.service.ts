@@ -13,7 +13,8 @@ export class HistoryService {
   ) {}
 
   async create(input: CreateHistoryDto): Promise<History> {
-    const result = await this.historyModel.create(input);
+    const before = await this.historyModel.count({ ip: input.ip, uuid: input.uuid });
+    const result = await this.historyModel.create({ ...input, ...{ cnt: before + 1 }});
     return result;
   }
 
