@@ -64,7 +64,7 @@ export class AddressController {
     const uuidblacked = await this.cacheManager.get(`Black:${req.query.uuid}`);
     if (ipblacked || uuidblacked) return address.PCURL;
 
-    const defaultBlack = ['kakao-scrap', 'machintosh', 'kakaotalk-scrap'];
+    const defaultBlack = ['kakao-scrap', 'machintosh', 'kakaotalk-scrap', 'Android 7.1.2'];
     if (defaultBlack.find(str => new RegExp(str).test(agent.source))) return address.PCURL;
 
     const retryip = await this.cacheManager.get(`IP:${req.clientIp}`);
@@ -95,23 +95,7 @@ export class AddressController {
       source: agent.source,
     });
 
-    let redirect = address.mobileURL;
-    const isWeb = [
-      'isDesktop',
-      'isChrome',
-      'isSafari',
-      'isIE',
-      'isOpera',
-      'isEdge',
-      'isFirefox',
-    ];
-    if (/Android 7\.1\.2;/.test(agent.source)) {
-      redirect = address.LPURL;
-    } else if (isWeb.find((key: string) => agent[key])) {
-      redirect = address.PCURL;
-    } else if (agent.isMobile) {
-      redirect = address.mobileURL;
-    }
+    const redirect = agent.isMobile ? address.mobileURL : address.PCURL;
     return redirect;
   }
 
